@@ -40,7 +40,7 @@ installed, and have your machine configured to do PCIe passthrough (check refere
 This repo is run in a *step-wise* fashion where the user needs ensures each step
 runs properly.
 
-0. Find host PCIe Nvidia GPU devices
+### 0. Find host PCIe Nvidia GPU devices
 
 ```shell
 $ ./bin/00_host_get_gpu_devices.sh
@@ -52,13 +52,13 @@ You can verify that devices have been found by `cat`ing the file `PCI_GPUS.env`
 $ cat ./PCI_GPUS.env
 ```
 
-1. Install vagrant plugins.
+### 1. Install vagrant plugins.
 
 ``` shell
 $ ./bin/10_host_setup_vagrant.sh
 ```
 
-2. Bring up the VM with PCI passthrough and setup `nvidia-docker` and `cuda` inside
+### 2. Bring up the VM with PCI passthrough and setup `nvidia-docker` and `cuda` inside
 
 ``` shell
 $ source PCI_GPUS.env && vagrant up
@@ -73,7 +73,7 @@ $ vagrant ssh -c "./bin/21_guest_test_docker_runtime.sh"
 
 You should see the `nvidia-smi` table with your gpus listed
 
-3. Install some tools into the VM (`golang`, `arkade`, `docker-compose`, `ctop`)
+### 3. Install some tools into the VM (`golang`, `arkade`, `docker-compose`, `ctop`)
 
 ``` shell
 $ vagrant ssh -c "./bin/31_guest_install_golang.sh"
@@ -82,7 +82,7 @@ $ vagrant ssh -c "./bin/33_guest_install_docker_compose.sh"
 $ vagrant ssh -c "./bin/34_guest_install_ctop.sh"
 ```
 
-4. Setup a `k3s` cluster inside the VM
+### 4. Setup a `k3s` cluster inside the VM
 
 ``` shell
 $ vagrant ssh -c "./bin/40_guest_setup_k3s_cluster.sh"
@@ -94,7 +94,7 @@ To verify that the cluster is up and running, check the status of all the pods f
 $ vagrant ssh -c "kubectl get pods -A"
 ```
 
-5. Setup `gpu-manager` on `k3s` (If you want to learn more about `gpu-manager`, check out the references).
+### 5. Setup `gpu-manager` on `k3s` (If you want to learn more about `gpu-manager`, check out the references).
 
 ``` shell
 $ vagrant ssh -c "./bin/50_guest_setup_gpu_manager.sh"
