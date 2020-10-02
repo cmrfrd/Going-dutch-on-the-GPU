@@ -128,9 +128,9 @@ samples
 $ vagrant ssh -c "./bin/42_guest_push_base_images_to_registry.sh"
 ```
 
-### 5. Setup `gpu-manager` on `k3s` (If you want to learn more about `gpu-manager`, check out the references).
+### 5. Setup `gpu-manager` on `k3s`
 
-`gpu-manager` is an amazing projects that will let us create virtual GPUs that can be assigned to our containers. This script build a fresh image of `gpu-manager`
+`gpu-manager` is an amazing projects that will let us create virtual GPUs that can be assigned to our containers  (If you want to learn more about `gpu-manager`, check out the references). This script build a fresh image of `gpu-manager`
 
 ``` shell
 $ vagrant ssh -c "./bin/50_guest_setup_gpu_manager.sh"
