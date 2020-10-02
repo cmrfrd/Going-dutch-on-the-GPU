@@ -2,7 +2,7 @@
    ____       _               ____        _       _
   / ___| ___ (_)_ __   __ _  |  _ \ _   _| |_ ___| |__        ___________
  | |  _ / _ \| | '_ \ / _` | | | | | | | | __/ __| '_ \      /    /     /\
- | |_| | (_) | | | | | (_| | | |_| | |_| | || (__| | | |    /____/____ /  \
+ | |_| | (_) | | | | | (_| | | |_| | |_| | || (__| | | |    /____/_____/  \
   \____|\___/|_|_| |_|\__, | |____/ \__,_|\__\___|_| |_|   /    /     /\  /\
                  _   _|___/        ____ ____  _   _       /____/_____/  \/  \
     ___  _ __   | |_| |__   ___   / ___|  _ \| | | |      \    \     \  /\  /
@@ -42,6 +42,8 @@ runs properly.
 
 ### 0. Find host PCIe Nvidia GPU devices
 
+This first step uses `lspci` and parses device data into an environment file
+
 ```shell
 $ ./bin/00_host_get_gpu_devices.sh
 ```
@@ -54,18 +56,25 @@ $ cat ./PCI_GPUS.env
 
 ### 1. Install vagrant plugins.
 
+After checking you have a GPU(s) available, some `vagrant` plugins
+are needed so we can talk with `libvirt` and do some extra networking
+
 ``` shell
 $ ./bin/10_host_setup_vagrant.sh
 ```
 
 ### 2. Bring up the VM with PCI passthrough and setup `nvidia-docker` and `cuda` inside
 
+Once your GPU(s) have been saved and plugins installed, bring up the vagrant machine
+and run the `nvidia-docker` + `cuda` setup script.
+
 ``` shell
 $ source PCI_GPUS.env && vagrant up
 $ vagrant ssh -c "./bin/20_guest_setup_cuda_docker.sh"
 ```
 
-To test that the `nvidia-toolkit` is installed
+To test that the `nvidia-toolkit` is successfully installed by running `nvidia-smi`
+in a docker container
 
 ``` shell
 $ vagrant ssh -c "./bin/21_guest_test_docker_runtime.sh"
@@ -73,16 +82,27 @@ $ vagrant ssh -c "./bin/21_guest_test_docker_runtime.sh"
 
 You should see the `nvidia-smi` table with your gpus listed
 
-### 3. Install some tools into the VM (`golang`, `arkade`, `docker-compose`, `ctop`)
+### 3. Install some tools into the VM
+
+Next the command `arkade` is needed to install some utility kubernetes based clis
+
+``` shell
+$ vagrant ssh -c "./bin/32_guest_install_arkade.sh"
+```
+
+Here are some extra tools if you feel inclined (optional)
 
 ``` shell
 $ vagrant ssh -c "./bin/31_guest_install_golang.sh"
-$ vagrant ssh -c "./bin/32_guest_install_arkade.sh"
 $ vagrant ssh -c "./bin/33_guest_install_docker_compose.sh"
 $ vagrant ssh -c "./bin/34_guest_install_ctop.sh"
 ```
 
 ### 4. Setup a `k3s` cluster inside the VM
+
+Once the tools have been installed inside the VM, `k3s` can be spun up inside the
+VM. This script launches `k3s` with `DevicePlugins` feature gate so we can interact
+with the GPU.
 
 ``` shell
 $ vagrant ssh -c "./bin/40_guest_setup_k3s_cluster.sh"
@@ -94,7 +114,23 @@ To verify that the cluster is up and running, check the status of all the pods f
 $ vagrant ssh -c "kubectl get pods -A"
 ```
 
+After ensuring that pods are being created, deploy a local registry with `docker` so images that are built locally can be accessed within the `k3s` cluster.
+
+``` shell
+$ vagrant ssh -c "./bin/41_guest_setup_docker_registry.sh"
+```
+
+Once the registry is deployed, run this script to push some base images to the
+registry so they can be easily accessed throughout the cluster when running the
+samples
+
+``` shell
+$ vagrant ssh -c "./bin/42_guest_push_base_images_to_registry.sh"
+```
+
 ### 5. Setup `gpu-manager` on `k3s` (If you want to learn more about `gpu-manager`, check out the references).
+
+`gpu-manager` is an amazing projects that will let us create virtual GPUs that can be assigned to our containers. This script build a fresh image of `gpu-manager`
 
 ``` shell
 $ vagrant ssh -c "./bin/50_guest_setup_gpu_manager.sh"
