@@ -5,6 +5,7 @@ DOCKER_REGISTRY=localhost:5000
 BASE_IMAGES=(
   "pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel"
   "tensorflow/tensorflow:2.2.1-gpu-py3"
+  "nvidia/cuda:10.2-cudnn8-devel-ubuntu18.04"
 )
 
 docker login $DOCKER_REGISTRY
@@ -22,6 +23,5 @@ do
 
   echo "Removing original image in docker directory ..."
   docker rmi $image
-  docker rmi $DOCKER_REGISTRY/$image
 
 done
