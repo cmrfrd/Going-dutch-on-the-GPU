@@ -52,8 +52,6 @@ Vagrant.configure("2") do |config|
       GPUS.each { |gpu|
         v.pci :bus => gpu[:bus], :slot => gpu[:slot], :function => gpu[:function]
       }
-      # v.pci :bus => '0x03', :slot => '0x00', :function => '0x0'
-      # v.pci :bus => '0x04', :slot => '0x00', :function => '0x0'
     end
   end
 end
