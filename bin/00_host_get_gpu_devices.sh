@@ -22,10 +22,10 @@ function break_PCI_info {
       local SLOT_FUNCTION="$(echo $pci_info | cut -f3 -d:)"
       local SLOT="0x$(echo $SLOT_FUNCTION | cut -f1 -d.)"
       local FUNCTION="0x$(echo $SLOT_FUNCTION | cut -f2 -d.)"
-      # echo ${DOMAIN} ${BUS} ${SLOT} ${FUNCTION}
       (( count++ ))
       echo "export GPU_${count}=\"${DOMAIN}${DELIM}${BUS}${DELIM}${SLOT}${DELIM}${FUNCTION}\""
   done
 }
 
+echo "Saving gpu info in PCI_GPUS.env ..."
 lspci -D | filter_nvidia_gpus_pci | break_PCI_info > PCI_GPUS.env
