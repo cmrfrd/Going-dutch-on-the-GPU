@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: approx-pi
+spec:
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 0
+  containers:
+    - image: localhost:5000/approx_pi
+      name: approx-pi
+      env:
+      - name: CUDA_VISIBLE_DEVICES
+        value: "0"
+      resources:
+        requests:
+          tencent.com/vcuda-core: 20
+          tencent.com/vcuda-memory: 2
+          cpu: "80m"
+          memory: "100Mi"
+        limits:
+          tencent.com/vcuda-core: 20
+          tencent.com/vcuda-memory: 2
+          cpu: "80m"
+          memory: "100Mi"

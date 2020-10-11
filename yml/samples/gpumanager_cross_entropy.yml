@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cross-entropy
+spec:
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 0
+  containers:
+    - image: localhost:5000/pytorch_cross_entropy
+      name: cross-entropy
+      command: ["/bin/sh","-c"]
+      args: ["python -u run.py --iterations=100 --delay=0.1"]
+      env:
+      - name: CUDA_VISIBLE_DEVICES
+        value: "0"
+      resources:
+        requests:
+          tencent.com/vcuda-core: 10
+          tencent.com/vcuda-memory: 2
+          cpu: "100m"
+          memory: "100Mi"
+        limits:
+          tencent.com/vcuda-core: 10
+          tencent.com/vcuda-memory: 2
+          cpu: "100m"
+          memory: "100Mi"
