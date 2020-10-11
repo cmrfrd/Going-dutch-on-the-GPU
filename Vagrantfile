@@ -37,14 +37,14 @@ Vagrant.configure("2") do |config|
     config.tun.enabled = true
     config.vm.hostname = "datalab"
     config.vm.box = "generic/ubuntu1604"
-    config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false
+    config.vm.synced_folder ".", "/home/vagrant", type: "nfs", nfs_udp: false
     config.vm.network "private_network", ip: "192.168.18.9"
     config.vm.provider "libvirt" do |v|
       v.driver = "kvm"
       v.host = 'localhost'
       v.uri = 'qemu:///system'
-      v.memory = 4096
-      v.cpus = 2
+      v.memory = 6096
+      v.cpus = 4
       v.machine_type = "q35"
       v.cpu_mode = "host-passthrough"
       v.kvm_hidden = true
