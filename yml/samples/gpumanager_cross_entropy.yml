@@ -6,7 +6,7 @@ spec:
   restartPolicy: Never
   terminationGracePeriodSeconds: 0
   containers:
-    - image: localhost:5000/pytorch_cross_entropy
+    - image: localhost:5000/cross_entropy
       name: cross-entropy
       command: ["/bin/sh","-c"]
       args: ["python -u run.py --iterations=100 --delay=0.1"]
