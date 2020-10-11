@@ -1,0 +1,22 @@
+{
+    "name": "fft",
+    "version": "1.0.0",
+    "description": "",
+    "main": "run.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
+        "start": "node dist/run.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-preset-es2015": "^6.24.1",
+        "babel-preset-latest": "^6.24.1"
+    },
+    "dependencies": {
+        "@tensorflow/tfjs": "^2.6.0",
+        "@tensorflow/tfjs-node-gpu": "^2.6.0"
+    }
+}
