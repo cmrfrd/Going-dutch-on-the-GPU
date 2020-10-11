@@ -27,9 +27,11 @@ can setup your own GPU enabled [Kubernetes](https://kubernetes.io/) cluster on y
 
 More and more Data Scientists, Machine Learning Engineers, and
 Developers are shifting to "containerizing" their projects and
-using GPU hardware to accelerate them. This project is an ode
-to effective resource utilitzation and a message to programmers
-to take into consideration the resources their software needs.
+using GPU hardware to accelerate them. With these new capabilities
+it's easy to forget the importance of making the most of your
+hardware. This project is an ode to effective resource utilitzation
+and a message to programmers to take into consideration the resources
+allocations their software needs.
 
 
 ## Running this project
@@ -37,12 +39,12 @@ to take into consideration the resources their software needs.
 This repo assumes that you have [libvirt](https://libvirt.org/) and [vagrant](https://www.vagrantup.com/)
 installed, and have your machine configured to do PCIe passthrough (check references for more).
 
-This repo is run in a *step-wise* fashion where the user needs ensures each step
-runs properly.
+This repo is run in a *step-wise* fashion. At every step/command, the is an accompanying
+verification step to ensure the step ran successfully.
 
 ### 0. Find host PCIe Nvidia GPU devices
 
-This first step uses `lspci` and parses device data into an environment file
+This first step uses `lspci` to parse device data into an environment file
 
 ```shell
 $ ./bin/00_host_get_gpu_devices.sh
@@ -56,8 +58,8 @@ $ cat ./PCI_GPUS.env
 
 ### 1. Install vagrant plugins.
 
-After checking you have a GPU(s) available, some `vagrant` plugins
-are needed so we can talk with `libvirt` and do some extra networking
+After checking you have GPU(s) available, some `vagrant` plugins
+will need to be installed to talk with `libvirt` and do some extra networking
 
 ``` shell
 $ ./bin/10_host_setup_vagrant.sh
@@ -65,7 +67,7 @@ $ ./bin/10_host_setup_vagrant.sh
 
 ### 2. Bring up the VM with PCI passthrough and setup `nvidia-docker` and `cuda` inside
 
-Once your GPU(s) have been saved and plugins installed, bring up the vagrant machine
+Once the GPU(s) have been saved and plugins installed, bring up the vagrant machine
 and run the `nvidia-docker` + `cuda` setup script.
 
 ``` shell
@@ -73,14 +75,14 @@ $ source PCI_GPUS.env && vagrant up
 $ vagrant ssh -c "./bin/20_guest_setup_cuda_docker.sh"
 ```
 
-To test that the `nvidia-toolkit` is successfully installed by running `nvidia-smi`
+To test that the `nvidia-toolkit` is successfully installed, run `nvidia-smi`
 in a docker container
 
 ``` shell
 $ vagrant ssh -c "./bin/21_guest_test_docker_runtime.sh"
 ```
 
-You should see the `nvidia-smi` table with your gpus listed
+You should see the `nvidia-smi` table with your GPU(s) listed
 
 ### 3. Install some tools into the VM
 
@@ -101,8 +103,8 @@ $ vagrant ssh -c "./bin/34_guest_install_ctop.sh"
 ### 4. Setup a `k3s` cluster inside the VM
 
 Once the tools have been installed inside the VM, `k3s` can be spun up inside the
-VM. This script launches `k3s` with `DevicePlugins` feature gate so we can interact
-with the GPU.
+VM. This script launches `k3s` with the `DevicePlugins` feature gate so we can interact
+with the GPU from `k3s`.
 
 ``` shell
 $ vagrant ssh -c "./bin/40_guest_setup_k3s_cluster.sh"
@@ -136,7 +138,7 @@ $ vagrant ssh -c "./bin/42_guest_push_base_images_to_registry.sh"
 $ vagrant ssh -c "./bin/50_guest_setup_gpu_manager.sh"
 ```
 
-Test that `gpu-manager` has been installed correctly by running 2 pods with fractional resources
+Verify that `gpu-manager` has been installed correctly by running a pods with fractional resources
 
 ``` shell
 $ vagrant ssh -c "./bin/51_guest_test_gpu_manager.sh"
@@ -144,6 +146,29 @@ $ vagrant ssh -c "./bin/51_guest_test_gpu_manager.sh"
 
 If you managed to run all these steps, congratulations! You successfully created a Kubernetes cluster
 with fractional GPU sharing!
+
+### 6. Running samples
+
+To demonstrate some of the gpu sharing capabilities, build then run the sample pods under `yml/samples/`
+
+``` shell
+$ vagrant ssh -c "./bin/60_guest_build_sample_images.sh"
+```
+
+Run each sample with some time spaced so the scheduler has time to resync
+
+``` shell
+vagrant ssh
+
+** Inside VM **
+for f in $(find yml/samples/*)
+do
+    kubectl apply -f $f;
+    sleep 1;
+done
+```
+
+You can view the memory usage of each process with `nvidia-smi`
 
 ## References
 
