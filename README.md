@@ -159,8 +159,11 @@ Run each sample with some time spaced so the scheduler has time to resync
 
 ``` shell
 vagrant ssh
+```
 
-** Inside VM **
+Inside VM
+
+```shell
 for f in $(find yml/samples/*)
 do
     kubectl apply -f $f;
