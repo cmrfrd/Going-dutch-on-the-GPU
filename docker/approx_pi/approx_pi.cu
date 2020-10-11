@@ -12,7 +12,7 @@ typedef std::numeric_limits<double> DblLim;
 const Count WARP_SIZE = 32;
 const Count NBLOCKS = 64;
 const Count ITERATIONS = 10000000;
-const Count REPETITIONS = 500;
+const Count REPETITIONS = 400;
 
 __global__ void monte_carlo_pi(Count *totals) {
 
